@@ -1,3 +1,4 @@
+import copy
 import ctypes
 import multiprocessing
 import time
@@ -191,7 +192,11 @@ class SubprocEnvWorker(EnvWorker):
                 return {k: decode_obs(v) for k, v in buffer.items()}
             raise NotImplementedError
 
-        return decode_obs(self.buffer)
+        decoded_obs = decode_obs(self.buffer)
+        if self.share_memory:
+            return copy.deepcopy(decoded_obs)
+        else:
+            return decoded_obs
 
     @staticmethod
     def wait(  # type: ignore
